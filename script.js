@@ -10,7 +10,11 @@ let claimedQ1 = false; let claimedQ2 = false; let claimedQ3 = false; let claimed
 let claimedM1 = false;
 let claimedM2 = false;
 
-let facilityTutorialDone = false; // Tracks if they've seen the Facility popup
+let facilityTutorialDone = false;
+
+// --- NEW ARENA SECURITY VARIABLES ---
+let dailyBattlesPlayed = 0;
+let isBattling = false; // Anti-spam lock
 
 // Audio Helper
 function playSound(id) {
@@ -299,6 +303,9 @@ function loadUserData() {
 
         // Load facility tutorial state
         facilityTutorialDone = localStorage.getItem('dinoFacTut_' + currentUser) === 'true';
+        
+        let savedDailyBattles = localStorage.getItem('dinoDailyBattles_' + currentUser);
+        dailyBattlesPlayed = savedDailyBattles !== null ? parseInt(savedDailyBattles) : 0;
 
         coins = savedCoins !== null ? parseInt(savedCoins) : 2000;
         permits = savedPermits !== null ? parseInt(savedPermits) : 3;
@@ -335,7 +342,7 @@ function loadUserData() {
         renderDinoWebList();
         checkDailyReset();
     } else {
-        coins = 0; permits = 0; userCollection = []; facilityTutorialDone = false;
+        coins = 0; permits = 0; userCollection = []; facilityTutorialDone = false; dailyBattlesPlayed = 0;
     }
 }
 
@@ -347,6 +354,7 @@ function checkDailyReset() {
     if (lastQuestReset !== today) {
         questBattlesCount = 0; questExcavatesCount = 0; questWinsCount = 0; questMapCount = 0; questCommonCount = 0;
         claimedQ1 = false; claimedQ2 = false; claimedQ3 = false; claimedQ4 = false; claimedQ5 = false;
+        dailyBattlesPlayed = 0;
         
         localStorage.setItem('dinoLastQuestReset_' + currentUser, today);
         saveUserData();
@@ -367,6 +375,7 @@ function saveUserData() {
         localStorage.setItem('dinoQ5Cl_' + currentUser, claimedQ5);
         localStorage.setItem('dinoM1_' + currentUser, claimedM1); localStorage.setItem('dinoM2_' + currentUser, claimedM2);
         localStorage.setItem('dinoFacTut_' + currentUser, facilityTutorialDone);
+        localStorage.setItem('dinoDailyBattles_' + currentUser, dailyBattlesPlayed);
     }
 }
 
@@ -886,6 +895,8 @@ window.closeDinoModal = function() { playSound('click'); if (modal) modal.classL
 modal.addEventListener('click', (e) => { if (e.target === modal) { playSound('click'); modal.classList.add('hidden'); } });
 window.closeMilestoneModal = function() { playSound('click'); const mModal = document.getElementById('milestone-modal'); if (mModal) mModal.classList.add('hidden'); };
 
+let isExcavating = false; // Prevents double-clicking excavate button
+
 function triggerExcavation() {
     playSound('excavate');
     document.querySelector('.database-controls').classList.add('hidden'); document.getElementById('excavate-btn').classList.add('hidden'); 
@@ -962,17 +973,40 @@ function triggerExcavation() {
 function attachContinueListener(revCon, isTutorial) {
     document.getElementById('collect-btn').addEventListener('click', () => {
         playSound('click');
+        isExcavating = false; // Reset lock
         revCon.classList.add('hidden'); cardGrid.classList.remove('hidden'); document.querySelector('.database-controls').classList.remove('hidden'); updateStatsUI(); renderCatalog();
         if (isTutorial) { tabs.forEach(t => t.classList.remove('active')); const arenaTab = document.getElementById('arena-tab-li'); if (arenaTab) arenaTab.classList.add('active'); switchView('Arena'); window.scrollTo(0, 0); }
     });
 }
 
-document.getElementById('excavate-btn').addEventListener('click', () => { playSound('click'); if (!currentUser && userCollection.length === 0) { triggerExcavation(); } else if(permits > 0) { permits--; updateStatsUI(); triggerExcavation(); } else { playSound('error'); }});
-document.getElementById('buy-pack-btn').addEventListener('click', () => { playSound('click'); if(coins >= 500) { coins -= 500; updateStatsUI(); triggerExcavation(); } else { playSound('error'); } });
+document.getElementById('excavate-btn').addEventListener('click', () => { 
+    if (isExcavating) return;
+    playSound('click'); 
+    if (!currentUser && userCollection.length === 0) { isExcavating = true; triggerExcavation(); } 
+    else if(permits > 0) { isExcavating = true; permits--; updateStatsUI(); triggerExcavation(); } 
+    else { playSound('error'); }
+});
+document.getElementById('buy-pack-btn').addEventListener('click', () => { 
+    if (isExcavating) return;
+    playSound('click'); 
+    if(coins >= 500) { isExcavating = true; coins -= 500; updateStatsUI(); triggerExcavation(); } 
+    else { playSound('error'); } 
+});
 
 document.getElementById('arena-battle-btn').addEventListener('click', () => {
     playSound('click');
-    if (coins <= 0 && currentUser) { return; } if (userCollection.length === 0) { alert("You need at least one dinosaur in your collection to battle!"); return; }
+    if (isBattling) return; // Prevent Spam
+    if (coins <= 0 && currentUser) { return; } 
+    if (userCollection.length === 0) { alert("You need at least one dinosaur in your collection to battle!"); return; }
+    
+    if (currentUser && dailyBattlesPlayed >= 10) {
+        playSound('error');
+        alert("You have reached your daily limit of 10 Arena battles! Come back tomorrow.");
+        return;
+    }
+
+    isBattling = true; // Lock button
+    if (currentUser) dailyBattlesPlayed++;
 
     let playerDino, aiDino, fightStat; const statKeys = ['pac', 'pwr', 'def', 'siz', 'iq', 'agi']; const statNames = {'pac':'Pace', 'pwr':'Power', 'def':'Defense', 'siz':'Size', 'iq':'Intelligence', 'agi':'Agility'};
     if (!currentUser) { playerDino = userCollection[0]; aiDino = masterCatalog.find(d => d.id === 20); fightStat = 'pwr'; } 
@@ -983,6 +1017,8 @@ document.getElementById('arena-battle-btn').addEventListener('click', () => {
     
     const announce = document.getElementById('battle-announcement'); announce.innerText = `RANDOM DRAW! FIGHTING IN: ${statNames[fightStat].toUpperCase()}!`;
     const diff = pStat - aStat;
+
+    updateStatsUI(); // Update battle counter immediately
 
     setTimeout(() => {
         let wonMatch = false;
@@ -1000,7 +1036,11 @@ document.getElementById('arena-battle-btn').addEventListener('click', () => {
         }
 
         if (questBattlesCount < 2) questBattlesCount++; if (wonMatch && questWinsCount < 1) questWinsCount++;
-        updateStatsUI(); if (!currentUser) { setTimeout(() => { document.getElementById('tutorial-complete-modal').classList.remove('hidden'); }, 1500); }
+        
+        isBattling = false; // Unlock button
+        updateStatsUI(); 
+        
+        if (!currentUser) { setTimeout(() => { document.getElementById('tutorial-complete-modal').classList.remove('hidden'); }, 1500); }
     }, 1500);
 });
 
@@ -1062,8 +1102,23 @@ function updateStatsUI() {
             else { buyBtn.style.opacity = "1"; msg.innerText = "Out of Permits! Buy a pack for 500 Coins?"; }
         }
     }
-    if (coins <= 0 && currentUser) { if(battleBtn) battleBtn.classList.add('hidden'); if(brokeControls) brokeControls.classList.remove('hidden'); } 
-    else { if(battleBtn) battleBtn.classList.remove('hidden'); if(brokeControls) brokeControls.classList.add('hidden'); }
+    
+    // Arena Button Logic & Daily Limit Update
+    if (battleBtn) {
+        if (currentUser) {
+            let remaining = Math.max(0, 10 - dailyBattlesPlayed);
+            battleBtn.innerText = `⚔️ BATTLE! (${remaining} LEFT)`;
+            if (remaining === 0) { battleBtn.style.opacity = "0.5"; } 
+            else { battleBtn.style.opacity = "1"; }
+        } else {
+            battleBtn.innerText = "⚔️ BATTLE!";
+            battleBtn.style.opacity = "1";
+        }
+        
+        if (coins <= 0 && currentUser) { battleBtn.classList.add('hidden'); if(brokeControls) brokeControls.classList.remove('hidden'); } 
+        else { battleBtn.classList.remove('hidden'); if(brokeControls) brokeControls.classList.add('hidden'); }
+    }
+    
     updateQuestNotificationDot();
 }
 
