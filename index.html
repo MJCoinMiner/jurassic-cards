@@ -4,10 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Jurassic Cards Archive</title>
-    
-    <!-- Emoji Favicon -->
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🦕</text></svg>">
-
     <link rel="stylesheet" href="styles.css">
     <link href="https://fonts.googleapis.com/css2?family=Teko:wght@500;700&family=Oswald:wght@400;700&display=swap" rel="stylesheet">
 </head>
@@ -15,7 +12,7 @@
 
     <div class="video-bg-container">
         <video autoplay loop muted playsinline id="jungle-video">
-            <source src="jungle.mp4" type="video/mp4">
+            <source src="videos/jungle.mp4" type="video/mp4">
         </video>
         <div class="video-overlay"></div>
     </div>
@@ -28,11 +25,12 @@
                 <li data-filter="About" id="about-tab-li">About</li>
                 <li data-filter="Collection">Collection</li>
                 <li data-filter="Facility" id="facility-tab-li">🏢 Facility</li>
-                <li data-filter="Arena" id="arena-tab-li">⚔️ Arena</li>
+                <li data-filter="Arena" id="arena-tab-li">⚔ Arena</li>
+                <li data-filter="Rankings" id="rankings-tab-li">🏆 Rankings</li>
                 <li data-filter="Daily" id="daily-tab-li">🎁 Daily Loot</li>
                 <li data-filter="Quests" id="quests-tab-li">📜 Quests <span id="quest-dot" class="hidden"></span></li>
-                <li data-filter="Achievements" id="achievements-tab-li">🏆 Milestones</li>
-                <li data-filter="Map" id="map-tab-li">🗺️ Map</li>
+                <li data-filter="Achievements" id="achievements-tab-li">🏅 Milestones</li>
+                <li data-filter="Map" id="map-tab-li">🗺 Map</li>
                 <li data-filter="DinoWeb" id="dinoweb-tab-li">📖 Dino Web</li>
             </ul>
         </nav>
@@ -40,19 +38,32 @@
             <span>🪙 <span id="coin-count">0</span></span>
             <span>🎫 <span id="permit-count">0</span></span>
             <button id="nav-login-btn">Sign In / Register</button>
-            <button id="nav-logout-btn" class="hidden">Sign Out</button>
+            <button id="nav-profile-btn" class="hidden">👤 Profile</button>
         </div>
     </header>
 
     <main>
-        <!-- HOME PAGE -->
+        <!-- HOME PAGE WITH DAILY PUZZLE -->
         <section id="home-view">
             <div class="home-hero">
                 <h1>WELCOME TO THE JURASSIC ARCHIVE</h1>
-                <p>Excavate fossils, manage your facility, and battle in the arena.</p>
+                <p>Excavate rare fossil eggs, manage your research facility, and battle in the arena.</p>
                 <div id="home-auth-container">
                     <button id="start-journey-btn">LET'S GET STARTED!</button>
                     <button id="home-register-btn" class="hidden">CREATE ACCOUNT</button>
+                </div>
+            </div>
+
+            <div id="daily-puzzle-container" class="hidden">
+                <div class="puzzle-box">
+                    <h2 style="font-family:'Teko'; font-size:3.5rem; color:var(--rare); margin-bottom: 5px;">🧬 DAILY DINO DECODE</h2>
+                    <p style="font-size: 1.2rem; color: #ccc; margin-bottom: 15px;">Guess the global mystery dinosaur in 5 tries! (Resets daily)</p>
+                    <div id="puzzle-guesses-grid" class="puzzle-grid"></div>
+                    <div id="puzzle-input-area" style="margin-top: 20px; display: flex; gap: 10px; justify-content: center;">
+                        <select id="puzzle-dino-select" style="padding: 10px; font-family: 'Oswald'; font-size: 1.1rem; border-radius: 5px; width: 60%;"><option value="">-- Select a Dinosaur to Guess --</option></select>
+                        <button id="puzzle-guess-btn" style="background: var(--rare); border: none; padding: 10px 20px; font-family: 'Teko'; font-size: 1.5rem; cursor: pointer; border-radius: 5px; font-weight: bold;">GUESS</button>
+                    </div>
+                    <p id="puzzle-message" style="margin-top: 15px; font-family: 'Teko'; font-size: 2rem; color: var(--ui-gold);"></p>
                 </div>
             </div>
         </section>
@@ -61,129 +72,140 @@
         <section id="about-view" class="hidden">
             <div class="about-container" style="text-align: left;">
                 <h2 style="color:var(--ui-gold); text-align: center; font-size: 5rem;">CLASSIFIED: PROJECT APEX</h2>
-                <div style="background: rgba(0,0,0,0.6); padding: 20px; border-left: 4px solid var(--ui-gold); margin-bottom: 30px;">
-                    <p style="font-size: 1.4rem; color: #e8e2d2; line-height: 1.6; margin-bottom: 15px;">
-                        Welcome, Recruit. The Jurassic Archive is a global initiative dedicated to recovering the DNA of history's most terrifying apex predators and prehistoric marvels.
-                    </p>
-                    <p style="font-size: 1.4rem; color: #e8e2d2; line-height: 1.6;">
-                        Your mission is simple: travel the world, use 🎫 Permits to <strong>excavate rare fossils</strong>, and rebuild these titans. Once resurrected, pit your creatures against rival paleontologists in the <strong>Top Trumps Arena</strong> to fund future expeditions.
-                    </p>
+                <div style="background: rgba(0,0,0,0.6); padding: 20px; border-radius: 10px; border-left: 4px solid var(--ui-gold); margin-bottom: 30px;">
+                    <p style="font-size: 1.4rem; color: #e8e2d2; line-height: 1.6; margin-bottom: 15px;">Welcome, Recruit. The Jurassic Archive is dedicated to recovering the DNA of history's most terrifying apex predators.</p>
+                    <p style="font-size: 1.4rem; color: #e8e2d2; line-height: 1.6;">Follow these steps to build your empire:</p>
                 </div>
-                
                 <div class="features-grid">
-                    <div class="feature-box" style="text-align: center;">
-                        <div class="feature-icon">⛏️</div>
-                        <h3>1. EXCAVATE</h3>
-                        <p style="font-size: 1.1rem; color:#aaa;">Extract fossils across global dig sites to add to your Collection.</p>
-                    </div>
-                    <div class="feature-box" style="text-align: center;">
-                        <div class="feature-icon">🏢</div>
-                        <h3>2. MANAGE</h3>
-                        <p style="font-size: 1.1rem; color:#aaa;">Assign unused dinosaurs to the Archive Facility to generate passive resources.</p>
-                    </div>
-                    <div class="feature-box" style="text-align: center;">
-                        <div class="feature-icon">⚔️</div>
-                        <h3>3. BATTLE</h3>
-                        <p style="font-size: 1.1rem; color:#aaa;">Risk cards in the Arena to win high-stakes coin bounties.</p>
-                    </div>
+                    <div class="feature-box" style="text-align: center;"><div class="feature-icon">🥚</div><h3>1. INCUBATE</h3><p style="color:#aaa; font-size:1.1rem;">Excavate eggs. They take time to hatch into Standard, Holo, or Primal titans.</p></div>
+                    <div class="feature-box" style="text-align: center;"><div class="feature-icon">🏢</div><h3>2. MANAGE</h3><p style="color:#aaa; font-size:1.1rem;">Assign spare dinosaurs to the Facility to generate passive Coins and Permits.</p></div>
+                    <div class="feature-box" style="text-align: center;"><div class="feature-icon">📖</div><h3>3. EXPAND</h3><p style="color:#aaa; font-size:1.1rem;">Register to unlock the Combat Arena, Global Rankings, and full Encyclopedia.</p></div>
                 </div>
-
                 <div id="tutorial-callout-box" class="tutorial-callout" style="text-align: center;">
-                    <h3 style="color: var(--rare); font-size: 2.5rem;">YOUR TRIAL EXPEDITION IS READY.</h3>
-                    <p style="margin-bottom: 15px; font-size: 1.2rem;">We have granted you 1 Trial Permit to extract your very first card.</p>
                     <button id="about-continue-btn">CLAIM FREE TRIAL EXCAVATION</button>
                 </div>
             </div>
         </section>
 
-        <!-- COLLECTION VIEW -->
+        <!-- COLLECTION & INCUBATOR VIEW -->
         <section id="collection-view" class="hidden">
             <div id="excavate-section">
-                <button id="excavate-btn">⛏️ Excavate Fossil (Cost: 1 🎫)</button>
-                <button id="buy-pack-btn" class="hidden">🛒 Buy Pack (Cost: 500 🪙)</button>
-                <p id="excavate-msg" style="color:var(--ui-gold); margin-top:10px; font-family:'Teko'; font-size:1.5rem;"></p>
+                <h2 style="font-family:'Teko'; font-size:3.5rem; color:var(--ui-gold); text-shadow:2px 2px black; margin-bottom: 5px;">DNA INCUBATORS</h2>
+                <p style="color:#ccc; font-size: 1.2rem; margin-bottom: 20px;">Eggs must incubate before hatching into playable dinosaurs. Speed them up with coins!</p>
                 
+                <div class="incubator-grid">
+                    <div class="incubator-slot" id="inc-slot-0"><div class="egg-icon">🥚</div><p class="egg-status">EMPTY SLOT</p></div>
+                    <div class="incubator-slot" id="inc-slot-1"><div class="egg-icon">🥚</div><p class="egg-status">EMPTY SLOT</p></div>
+                </div>
+
+                <div style="margin-top: 15px;">
+                    <button id="excavate-btn">⛏️ Excavate Egg (Cost: 1 🎫)</button>
+                    <button id="buy-pack-btn" class="hidden">🛒 Buy Egg (Cost: 1000 🪙)</button>
+                    <p id="excavate-msg" style="color:var(--ui-gold); margin-top:10px; font-family:'Teko'; font-size:1.5rem;"></p>
+                </div>
+
                 <div id="excavate-map-container" class="hidden">
-                    <div id="excavate-map">
-                        <div id="excavate-pin" class="hidden"></div>
-                        <div id="excavate-label" class="hidden">City, Country</div>
-                    </div>
+                    <div id="excavate-map"><div id="excavate-pin" class="hidden"></div><div id="excavate-label" class="hidden">Dig Site</div></div>
                     <p class="excavating-text">Locating fossil dig site...</p>
                 </div>
 
-                <div id="revealed-card-container" class="hidden">
-                    <button id="collect-btn">Collect & Add to Collection</button>
-                </div>
+                <div id="revealed-card-container" class="hidden"></div>
             </div>
 
-            <div class="database-controls">
-                <h2>YOUR COLLECTION</h2>
+            <div class="database-controls" style="margin-top: 40px;">
+                <h2>YOUR ARCHIVE COLLECTION</h2>
                 <select id="dino-filter">
                     <option value="All">View All</option>
-                    <optgroup label="Filter by Time Period">
-                        <option value="Triassic">Triassic Era</option>
-                        <option value="Jurassic">Jurassic Era</option>
-                        <option value="Cretaceous">Cretaceous Era</option>
-                        <option value="Ice Age">Ice Age</option>
-                        <option value="Cenozoic">Cenozoic Era</option>
-                    </optgroup>
-                    <optgroup label="Filter by Diet">
-                        <option value="Carnivore">Carnivores</option>
-                        <option value="Herbivore">Herbivores</option>
-                        <option value="Omnivore">Omnivores</option>
-                    </optgroup>
-                    <optgroup label="Filter by Rarity">
-                        <option value="common">Common</option>
-                        <option value="rare">Rare</option>
-                        <option value="epic">Epic</option>
-                        <option value="legendary">Legendary</option>
-                        <option value="mythic">Mythic</option>
-                    </optgroup>
+                    <optgroup label="Filter by Era"><option value="Triassic">Triassic Era</option><option value="Jurassic">Jurassic Era</option><option value="Cretaceous">Cretaceous Era</option><option value="Ice Age">Ice Age</option><option value="Cenozoic">Cenozoic Era</option></optgroup>
+                    <optgroup label="Filter by Diet"><option value="Carnivore">Carnivores</option><option value="Herbivore">Herbivores</option><option value="Omnivore">Omnivores</option></optgroup>
+                    <optgroup label="Filter by Rarity"><option value="common">Common</option><option value="rare">Rare</option><option value="epic">Legendary</option><option value="mythic">Mythic</option></optgroup>
                 </select>
             </div>
-
             <div id="card-grid" class="grid"></div>
         </section>
 
         <!-- ARCHIVE FACILITY VIEW -->
         <section id="facility-view" class="hidden">
             <div class="achievements-container" style="max-width: 1200px; position: relative;">
-                <div class="locked-overlay hidden">
-                    <h2 style="font-family:'Teko'; font-size:4.5rem; color:var(--ui-gold); text-shadow:2px 2px black; line-height:1;">🔒 RESTRICTED</h2>
-                    <p style="font-size: 1.3rem; margin-bottom: 20px; color: white; text-shadow: 1px 1px black; text-align: center;">Create an account to manage the Archive Facility.</p>
-                    <button class="overlay-register-btn">REGISTER NOW</button>
-                </div>
-                
+                <div class="locked-overlay hidden"><h2 style="font-family:'Teko'; font-size:4.5rem; color:var(--ui-gold);">🔒 RESTRICTED</h2><p style="font-size: 1.3rem; margin-bottom: 20px;">Create an account to manage the Archive Facility.</p><button class="overlay-register-btn">REGISTER NOW</button></div>
                 <div class="blur-target">
-                    <h2 style="font-family:'Teko'; font-size:4.5rem; color:var(--ui-gold); text-align:center; text-shadow:2px 2px black; line-height: 1;">ARCHIVE FACILITY</h2>
-                    <p style="text-align: center; margin-bottom: 30px; font-size: 1.2rem;">Assign dinosaurs to specialized habitats to generate active resources while playing!</p>
-
+                    <h2 style="font-family:'Teko'; font-size:4.5rem; color:var(--ui-gold); text-align:center;">ARCHIVE FACILITY</h2>
+                    <p style="text-align: center; margin-bottom: 25px; font-size: 1.2rem;">Assign dinosaurs to generate resources over time!</p>
                     <div id="facility-grid" class="facility-grid"></div>
                 </div>
             </div>
         </section>
 
-        <!-- ARENA VIEW -->
+        <!-- 3v3 DRAFT GAUNTLET ARENA VIEW -->
         <section id="arena-view" class="hidden">
-            <div class="arena-container">
-                <h2 style="font-family:'Teko'; font-size:4rem; color:var(--ui-gold); text-shadow:2px 2px black; text-align:center;">TOP TRUMPS ARENA</h2>
-                <p style="text-align:center; font-size:1.2rem; margin-bottom:20px;">Blindly risk a random card against an AI opponent across key combat stats!</p>
+            <div class="arena-container" style="max-width: 1200px; position: relative;">
+                <div class="locked-overlay hidden"><h2 style="font-family:'Teko'; font-size:4.5rem; color:var(--ui-gold);">🔒 RESTRICTED</h2><p style="font-size: 1.3rem; margin-bottom: 20px;">Create an account to access the Combat Arena.</p><button class="overlay-register-btn">REGISTER NOW</button></div>
                 
-                <div class="arena-controls">
-                    <button id="arena-battle-btn">⚔️ BATTLE!</button>
-                </div>
+                <div class="blur-target">
+                    <h2 style="font-family:'Teko'; font-size:4rem; color:var(--ui-gold); text-align:center;">SURVIVAL GAUNTLET</h2>
+                    
+                    <div id="arena-home" style="text-align: center;">
+                        <p style="font-size:1.2rem; margin-bottom:20px; color:#ccc;">Draft a Best-of-5 team using cards from your collection!<br>Face off against rival AI that scales with your highest leveled card. Claim Coins and RP based on your performance!</p>
+                        <div id="gauntlet-status-board" class="hidden" style="background: rgba(0,0,0,0.5); padding: 20px; border-radius: 10px; border: 2px solid var(--rare); max-width: 400px; margin: 0 auto 20px;">
+                            <h3 style="font-family:'Teko'; font-size:2.5rem; color:white; margin-bottom:10px;">LIFETIME STATS</h3>
+                            <p style="font-size: 1.5rem; color: var(--accent-green); font-weight: bold;">Gauntlets Won: <span id="gauntlet-wins">0</span></p>
+                            <p style="font-size: 1.5rem; color: #ff3333; font-weight: bold;">Gauntlets Lost: <span id="gauntlet-losses">0</span></p>
+                        </div>
+                        <button id="arena-enter-btn" class="dup-choice-btn" style="background: var(--ui-gold);">ENTER GAUNTLET (500 🪙)</button>
+                        <p id="arena-broke-msg" class="hidden" style="color: #ff3333; font-family: 'Teko'; font-size: 2rem; margin-top: 15px;">NOT ENOUGH COINS TO ENTER!</p>
+                    </div>
 
-                <div id="broke-controls" class="hidden" style="text-align: center; margin-bottom: 20px;">
-                    <p style="color: #ff6b6b; font-family: 'Teko'; font-size: 2rem; margin-bottom: 10px;">BANKRUPT: 0 COINS REMAINING</p>
-                    <button id="open-trivia-btn">🧠 PLAY TRIVIA TO EARN COINS</button>
-                </div>
-                
-                <h3 id="battle-announcement" style="font-family:'Teko'; font-size:2.5rem; text-align:center; color:white; margin:20px 0;"></h3>
+                    <div id="arena-draft-phase" class="hidden" style="text-align: center;">
+                        <h3 style="font-family:'Teko'; font-size:3rem; color:var(--rare);">DRAFT YOUR TEAM (<span id="draft-count">1</span>/3)</h3>
+                        <p style="margin-bottom: 20px; color: #aaa;">Select one dinosaur from your collection to add to your Gauntlet roster.</p>
+                        <div id="draft-choices-grid" class="grid" style="padding-top: 0;"></div>
+                    </div>
 
-                <div class="arena-stage">
-                    <div id="player-fighter" class="fighter-slot"><p>Your Dinosaur</p></div>
-                    <div class="vs-badge">VS</div>
-                    <div id="ai-fighter" class="fighter-slot"><p>Opponent</p></div>
+                    <div id="arena-combat-phase" class="hidden">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                            <div id="player-team-dots" style="display:flex; gap:10px; font-size:1.5rem;">⚪ ⚪ ⚪</div>
+                            <h3 id="combat-log" style="font-family:'Teko'; font-size:2.5rem; color:white; text-align:center; flex-grow:1;">CHOOSE A STAT TO ATTACK!</h3>
+                            <div id="ai-team-dots" style="display:flex; gap:10px; font-size:1.5rem;">⚪ ⚪ ⚪</div>
+                        </div>
+                        
+                        <div class="arena-stage" style="align-items: flex-start;">
+                            <div style="display:flex; flex-direction:column; align-items:center; gap:15px;">
+                                <div id="combat-player-card"></div>
+                                <div id="combat-stat-buttons" style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 5px; width: 100%; max-width: 280px;">
+                                    <button class="stat-atk-btn" data-stat="pac">PAC</button><button class="stat-atk-btn" data-stat="pwr">PWR</button><button class="stat-atk-btn" data-stat="def">DEF</button>
+                                    <button class="stat-atk-btn" data-stat="siz">SIZ</button><button class="stat-atk-btn" data-stat="iq">IQ</button><button class="stat-atk-btn" data-stat="agi">AGI</button>
+                                </div>
+                            </div>
+                            <div class="vs-badge" style="margin-top: 150px;">VS</div>
+                            <div id="combat-ai-card"></div>
+                        </div>
+                        <div style="text-align: center; margin-top: 20px;">
+                            <button id="combat-next-round-btn" class="dup-choice-btn hidden" style="background:var(--ui-gold);">NEXT ROUND</button>
+                        </div>
+                    </div>
+                    
+                    <div id="arena-rewards-phase" class="hidden" style="text-align: center; margin-top: 30px;">
+                        <h3 id="rewards-title" style="font-family:'Teko'; font-size:4rem; color:var(--ui-gold);">MATCH COMPLETE</h3>
+                        <div id="rewards-details" style="background: rgba(0,0,0,0.5); padding: 20px; border-radius: 10px; border: 2px solid var(--rare); max-width: 400px; margin: 0 auto 20px; font-size: 1.5rem;"></div>
+                        <button id="rewards-continue-btn" class="dup-choice-btn" style="background: var(--accent-green);">RETURN TO ARENA MENU</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- RANKINGS (LEADERBOARD) VIEW -->
+        <section id="rankings-view" class="hidden">
+            <div class="achievements-container" style="max-width: 900px; position: relative;">
+                <div class="locked-overlay hidden"><h2 style="font-family:'Teko'; font-size:4.5rem; color:var(--ui-gold);">🔒 RESTRICTED</h2><p style="font-size: 1.3rem; margin-bottom: 20px;">Create an account to access Global Rankings.</p><button class="overlay-register-btn">REGISTER NOW</button></div>
+                <div class="blur-target">
+                    <h2 style="font-family:'Teko'; font-size:4.5rem; color:var(--ui-gold); text-align:center;">GLOBAL RANKINGS</h2>
+                    <p style="text-align: center; margin-bottom: 25px; font-size: 1.2rem;">Win Arena matches to earn RP (Rank Points) and climb the ladder past rival explorers!</p>
+                    <div class="leaderboard-box">
+                        <table class="leaderboard-table" id="leaderboard-table">
+                            <thead><tr><th>Rank</th><th>Explorer</th><th>RP</th><th>Tier</th></tr></thead>
+                            <tbody><!-- Populated by JS --></tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </section>
@@ -191,19 +213,10 @@
         <!-- DAILY LOOT VIEW -->
         <section id="daily-view" class="hidden">
             <div class="achievements-container" style="position: relative; max-width: 1200px;">
-                <div class="locked-overlay hidden">
-                    <h2 style="font-family:'Teko'; font-size:4.5rem; color:var(--ui-gold); text-shadow:2px 2px black; line-height:1;">🔒 RESTRICTED</h2>
-                    <p style="font-size: 1.3rem; margin-bottom: 20px; color: white; text-shadow: 1px 1px black; text-align: center;">Create an account to unlock the Daily Login track.</p>
-                    <button class="overlay-register-btn">REGISTER NOW</button>
-                </div>
+                <div class="locked-overlay hidden"><h2 style="font-family:'Teko'; font-size:4.5rem; color:var(--ui-gold);">🔒 RESTRICTED</h2><p style="font-size: 1.3rem; margin-bottom: 20px;">Create an account to unlock the Daily Login track.</p><button class="overlay-register-btn">REGISTER NOW</button></div>
                 <div class="blur-target">
-                    <h2 style="font-family:'Teko'; font-size:4.5rem; color:var(--rare); text-align:center; text-shadow:2px 2px black; line-height: 1;">DAILY REWARD TRACK</h2>
-                    <p style="text-align: center; margin-bottom: 30px; font-size: 1.2rem;">Log in every day to claim progressive rewards. Don't break your streak!</p>
-                    
-                    <div class="road-container">
-                        <div class="road-line"></div>
-                        <div id="daily-road-nodes" class="road-nodes-wrapper"></div>
-                    </div>
+                    <h2 style="font-family:'Teko'; font-size:4.5rem; color:var(--rare); text-align:center;">DAILY REWARD TRACK</h2>
+                    <div class="road-container"><div class="road-line"></div><div id="daily-road-nodes" class="road-nodes-wrapper"></div></div>
                 </div>
             </div>
         </section>
@@ -211,14 +224,9 @@
         <!-- QUESTS VIEW -->
         <section id="quests-view" class="hidden">
             <div class="achievements-container" style="position: relative;">
-                <div class="locked-overlay hidden">
-                    <h2 style="font-family:'Teko'; font-size:4.5rem; color:var(--ui-gold); text-shadow:2px 2px black; line-height:1;">🔒 RESTRICTED</h2>
-                    <p style="font-size: 1.3rem; margin-bottom: 20px; color: white; text-shadow: 1px 1px black; text-align: center;">Create an account to unlock Daily Expeditions.</p>
-                    <button class="overlay-register-btn">REGISTER NOW</button>
-                </div>
+                <div class="locked-overlay hidden"><h2 style="font-family:'Teko'; font-size:4.5rem; color:var(--ui-gold);">🔒 RESTRICTED</h2><p style="font-size: 1.3rem; margin-bottom: 20px;">Create an account to unlock Daily Expeditions.</p><button class="overlay-register-btn">REGISTER NOW</button></div>
                 <div class="blur-target">
-                    <h2 style="font-family:'Teko'; font-size:4rem; color:var(--accent-green); text-align:center; text-shadow:2px 2px black;">DAILY EXPEDITION QUESTS</h2>
-                    <p style="text-align: center; margin-bottom: 20px; font-size: 1.2rem;">Complete tasks daily. Quests reset every 24 hours at midnight!</p>
+                    <h2 style="font-family:'Teko'; font-size:4rem; color:var(--accent-green); text-align:center;">DAILY EXPEDITION QUESTS</h2>
                     <div id="quests-list-container"></div>
                 </div>
             </div>
@@ -227,155 +235,67 @@
         <!-- ACHIEVEMENTS VIEW -->
         <section id="achievements-view" class="hidden">
             <div class="achievements-container" style="position: relative;">
-                <div class="locked-overlay hidden">
-                    <h2 style="font-family:'Teko'; font-size:4.5rem; color:var(--ui-gold); text-shadow:2px 2px black; line-height:1;">🔒 RESTRICTED</h2>
-                    <p style="font-size: 1.3rem; margin-bottom: 20px; color: white; text-shadow: 1px 1px black; text-align: center;">Create an account to track your Milestones.</p>
-                    <button class="overlay-register-btn">REGISTER NOW</button>
-                </div>
-                <div class="blur-target">
-                    <div id="milestones-list-container"></div>
-                </div>
+                <div class="locked-overlay hidden"><h2 style="font-family:'Teko'; font-size:4.5rem; color:var(--ui-gold);">🔒 RESTRICTED</h2><p style="font-size: 1.3rem; margin-bottom: 20px;">Create an account to track your Milestones.</p><button class="overlay-register-btn">REGISTER NOW</button></div>
+                <div class="blur-target"><div id="milestones-list-container"></div></div>
             </div>
         </section>
 
         <!-- MAP VIEW -->
         <section id="map-view" class="hidden">
             <div class="map-container">
-                <div class="locked-overlay hidden">
-                    <h2 style="font-family:'Teko'; font-size:4.5rem; color:var(--ui-gold); text-shadow:2px 2px black; line-height:1;">🔒 RESTRICTED</h2>
-                    <p style="font-size: 1.3rem; margin-bottom: 20px; color: white; text-shadow: 1px 1px black; text-align: center;">Create an account to explore the Global Map.</p>
-                    <button class="overlay-register-btn">REGISTER NOW</button>
-                </div>
+                <div class="locked-overlay hidden"><h2 style="font-family:'Teko'; font-size:4.5rem; color:var(--ui-gold);">🔒 RESTRICTED</h2><p style="font-size: 1.3rem; margin-bottom: 20px;">Create an account to explore the Global Map.</p><button class="overlay-register-btn">REGISTER NOW</button></div>
                 <div class="map-inner blur-target">
-                    <div class="pin" data-region="North America" style="top: 32%; left: 26%;"></div>
-                    <div class="pin" data-region="South America" style="top: 65%; left: 33%;"></div>
-                    <div class="pin" data-region="Europe" style="top: 28%; left: 49%;"></div>
-                    <div class="pin" data-region="Africa" style="top: 58%; left: 54%;"></div>
-                    <div class="pin" data-region="Asia" style="top: 30%; left: 72%;"></div>
+                    <div class="pin" data-region="North America" style="top: 32%; left: 26%;"></div><div class="pin" data-region="South America" style="top: 65%; left: 33%;"></div>
+                    <div class="pin" data-region="Europe" style="top: 28%; left: 49%;"></div><div class="pin" data-region="Africa" style="top: 58%; left: 54%;"></div><div class="pin" data-region="Asia" style="top: 30%; left: 72%;"></div>
                     <div class="map-instructions">Click a glowing pin to view dinosaurs discovered in that region.</div>
                 </div>
             </div>
         </section>
 
-        <!-- DINO WEB (ENCYCLOPEDIA) VIEW -->
+        <!-- DINO WEB VIEW -->
         <section id="dinoweb-view" class="hidden">
             <div class="dinoweb-container" style="position: relative;">
-                <div class="locked-overlay hidden">
-                    <h2 style="font-family:'Teko'; font-size:4.5rem; color:var(--ui-gold); text-shadow:2px 2px black; line-height:1;">🔒 RESTRICTED</h2>
-                    <p style="font-size: 1.3rem; margin-bottom: 20px; color: white; text-shadow: 1px 1px black; text-align: center;">Create an account to access the full Encyclopedia.</p>
-                    <button class="overlay-register-btn">REGISTER NOW</button>
-                </div>
-                
+                <div class="locked-overlay hidden"><h2 style="font-family:'Teko'; font-size:4.5rem; color:var(--ui-gold);">🔒 RESTRICTED</h2><p style="font-size: 1.3rem; margin-bottom: 20px;">Create an account to access the full Encyclopedia.</p><button class="overlay-register-btn">REGISTER NOW</button></div>
                 <div class="blur-target dinoweb-wrapper">
-                    <div class="dinoweb-sidebar">
-                        <input type="text" id="dinoweb-search" placeholder="Search Database...">
-                        <ul id="dinoweb-list"></ul>
-                    </div>
-                    <div class="dinoweb-content" id="dinoweb-content">
-                        <div style="display: flex; justify-content: center; align-items: center; height: 100%; flex-direction: column; color: #555; text-align: center;">
-                            <span style="font-size: 5rem;">📖</span>
-                            <h2>Select a creature from the database to begin.</h2>
-                        </div>
-                    </div>
+                    <div class="dinoweb-sidebar"><input type="text" id="dinoweb-search" placeholder="Search Database..."><ul id="dinoweb-list"></ul></div>
+                    <div class="dinoweb-content" id="dinoweb-content"><div style="display:flex;justify-content:center;align-items:center;height:100%;flex-direction:column;color:#888;"><span style="font-size:5rem;">📖</span><h2>Select a creature from the database to begin.</h2></div></div>
                 </div>
             </div>
         </section>
     </main>
 
-    <!-- Facility Assignment Modal -->
-    <div id="facility-modal" class="modal hidden">
-        <div class="modal-content" style="max-width: 800px;">
-            <span class="close-facility-btn close-btn">&times;</span>
-            <h2 id="facility-modal-title" style="font-family:'Teko'; font-size:3rem; color:var(--ui-gold); margin-bottom: 10px; border-bottom: 2px solid var(--accent-green);">ASSIGN WORKER</h2>
-            <p id="facility-modal-desc" style="color: #ccc; margin-bottom: 20px;">Select a compatible dinosaur to generate resources.</p>
-            <div id="facility-dino-grid" class="grid" style="grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 15px; padding: 0;"></div>
-        </div>
-    </div>
-
-    <!-- Dinosaur Info Modal -->
-    <div id="dino-modal" class="modal hidden">
-        <div class="modal-content">
-            <span id="close-dino-btn" class="close-btn" onclick="closeDinoModal()">&times;</span>
-            <div id="modal-details"></div>
-        </div>
-    </div>
-
-    <!-- Milestone Celebration Modal -->
-    <div id="milestone-modal" class="modal hidden">
-        <div class="modal-content login-box" style="border-color: var(--ui-gold); text-align: center; max-width: 520px; padding: 25px;">
-            <span class="close-btn" onclick="closeMilestoneModal()">&times;</span>
-            <h2 id="milestone-modal-title" style="font-family:'Teko'; font-size:3.5rem; color:var(--ui-gold); text-shadow:2px 2px black; line-height: 1;">MILESTONE COMPLETED!</h2>
-            <p id="milestone-modal-desc" style="font-size: 1.2rem; margin: 10px 0 15px; color: #ccc;"></p>
-            <div id="milestone-modal-card" style="display: flex; justify-content: center; margin-bottom: 20px;"></div>
-            <button id="milestone-modal-claim-btn" class="dup-choice-btn" style="background: var(--ui-gold); width: 100%;">CLAIM & ADD TO ARCHIVE</button>
-        </div>
-    </div>
-
-    <!-- Login/Register Modal -->
-    <div id="login-modal" class="modal hidden">
-        <div class="modal-content login-box">
-            <span class="close-login-btn">&times;</span>
-            <h2 id="modal-title" style="font-family:'Teko'; font-size:3rem; color:var(--ui-gold); text-align:center;">EXPLORER ACCESS</h2>
-            <form id="auth-form">
-                <input type="text" id="username-input" placeholder="Enter Username..." required autocomplete="username">
-                <input type="password" id="password-input" placeholder="Enter Password..." required autocomplete="current-password">
-                <button type="submit" id="submit-login-btn">LOGIN</button>
-            </form>
-            <p id="auth-toggle-text" style="margin-top: 15px; cursor: pointer; color: var(--rare);">Need an account? Register here</p>
-        </div>
-    </div>
-
-    <!-- Trivia Mini-Game Modal -->
-    <div id="trivia-modal" class="modal hidden">
-        <div class="modal-content" style="text-align: center;">
-            <span class="close-trivia-btn close-btn">&times;</span>
-            <h2 style="font-family:'Teko'; font-size:4rem; color:var(--rare); text-shadow:2px 2px black;">PREHISTORIC TRIVIA</h2>
-            <div id="trivia-game-area">
-                <h3 id="trivia-progress" style="color:var(--ui-gold); margin-bottom: 15px; font-size: 1.5rem;">Question 1 / 5</h3>
-                <p id="trivia-question" style="font-size: 1.8rem; font-family:'Teko'; margin-bottom: 25px;"></p>
-                <div id="trivia-options" style="display: flex; flex-direction: column; gap: 15px;"></div>
+    <!-- Profile Modal -->
+    <div id="profile-modal" class="modal hidden">
+        <div class="modal-content login-box" style="border-color: var(--rare); max-width: 450px;">
+            <span class="close-profile-btn close-btn">&times;</span>
+            <h2 id="profile-username" style="font-family:'Teko'; font-size:3.5rem; color:var(--ui-gold); line-height: 1;">EXPLORER DOSSIER</h2>
+            <p id="profile-rank-title" style="color:var(--rare); margin-bottom: 15px; font-weight: bold; letter-spacing: 1px;">Rank: Bronze Explorer</p>
+            <div style="background: rgba(0,0,0,0.5); padding: 15px; border-radius: 8px; margin-bottom: 25px; text-align: left; border-left: 3px solid var(--accent-green);">
+                <p style="font-size: 1.2rem; color: white; margin-bottom: 8px;"><strong>Species Discovered:</strong> <span id="profile-species-count" style="color: var(--accent-green); font-weight: bold;">0 / 23</span></p>
+                <p style="font-size: 1.2rem; color: white; margin-bottom: 8px;"><strong>Holographic Variants:</strong> <span id="profile-holo-count" style="color: #00ffff; font-weight: bold;">0</span></p>
+                <p style="font-size: 1.2rem; color: white; margin-bottom: 8px;"><strong>Primal Variants:</strong> <span id="profile-primal-count" style="color: #ff3333; font-weight: bold;">0</span></p>
+                <p style="font-size: 1.2rem; color: white;"><strong>Rank Points (RP):</strong> <span id="profile-rp-count" style="color: var(--rare); font-weight: bold;">1000</span></p>
             </div>
-            <div id="trivia-result-area" class="hidden">
-                <h3 id="trivia-result-title" style="font-size: 3rem; font-family:'Teko'; margin-bottom: 10px;"></h3>
-                <p id="trivia-result-coins" style="font-size: 2rem; color: var(--ui-gold); margin-bottom: 25px;"></p>
-                <button id="trivia-claim-btn" style="background: var(--accent-green); border: none; padding: 15px 30px; font-family: 'Teko'; font-size: 1.8rem; cursor: pointer; border-radius: 5px; font-weight: bold; color: white;">CLAIM COINS</button>
-            </div>
+            <button id="real-logout-btn" style="width: 100%; background: #d32f2f; color: white; border: none; padding: 12px; font-family: 'Teko', sans-serif; font-size: 1.6rem; cursor: pointer; border-radius: 5px; font-weight: bold; letter-spacing: 1px;">SIGN OUT OF ARCHIVE</button>
         </div>
     </div>
 
-    <!-- Tutorial Completion Pop-Up -->
+    <!-- Modals -->
+    <div id="facility-modal" class="modal hidden"><div class="modal-content" style="max-width: 800px;"><span class="close-facility-btn close-btn">&times;</span><h2 style="font-family:'Teko'; font-size:3rem; color:var(--ui-gold);">ASSIGN WORKER</h2><div id="facility-dino-grid" class="grid"></div></div></div>
+    <div id="dino-modal" class="modal hidden"><div class="modal-content"><span id="close-dino-btn" class="close-btn" onclick="closeDinoModal()">&times;</span><div id="modal-details"></div></div></div>
+    <div id="milestone-modal" class="modal hidden"><div class="modal-content login-box"><span class="close-btn" onclick="closeMilestoneModal()">&times;</span><h2 id="milestone-modal-title"></h2><p id="milestone-modal-desc"></p><div id="milestone-modal-card" style="display:flex; justify-content:center;"></div><button id="milestone-modal-claim-btn" class="dup-choice-btn" style="margin-top:20px; width:100%;">CLAIM</button></div></div>
+    <div id="login-modal" class="modal hidden"><div class="modal-content login-box"><span class="close-login-btn">&times;</span><h2 id="modal-title" style="font-family:'Teko'; font-size:3rem; color:var(--ui-gold);">EXPLORER ACCESS</h2><form id="auth-form"><input type="text" id="username-input" placeholder="Username" required><input type="password" id="password-input" placeholder="Password" required><button type="submit" id="submit-login-btn">LOGIN</button></form><p id="auth-toggle-text" style="color:var(--rare); cursor:pointer; margin-top: 15px;">Need an account? Register here</p></div></div>
+    
     <div id="tutorial-complete-modal" class="modal hidden">
-        <div class="modal-content login-box" style="border-color: var(--rare); text-align: center; position: relative;">
-            <span class="close-tutorial-btn close-btn" style="right: 15px; top: 10px;">&times;</span>
-            <h2 style="font-family:'Teko'; font-size:4rem; color:var(--ui-gold); text-shadow:2px 2px black; line-height: 1;">TUTORIAL COMPLETE!</h2>
-            <p style="font-size: 1.2rem; margin: 20px 0; color: #ccc;">
-                You've successfully excavated a Legendary T-Rex and tasted Arena combat! <br><br>
-                <strong style="color: white;">Register now</strong> to save your progress, unlock other features, and claim your Starter Bundle (2000 Coins + 3 Permits)!
-            </p>
-            <button id="tutorial-register-btn" style="width: 100%; background: var(--rare); color: black; border: none; padding: 15px; font-family: 'Teko', sans-serif; font-size: 1.8rem; cursor: pointer; border-radius: 5px; transition: 0.3s; font-weight: bold; box-shadow: 0 0 15px var(--rare);">CREATE ACCOUNT NOW</button>
+        <div class="modal-content login-box">
+            <h2 style="font-family:'Teko'; font-size:3.5rem; color:var(--ui-gold); line-height: 1;">TUTORIAL COMPLETE!</h2>
+            <p style="margin: 15px 0;">You've successfully secured your first dinosaur! Register now to save your collection, unlock the Combat Arena, and discover all 23 apex species!</p>
+            <button id="tutorial-register-btn" style="width: 100%; background: var(--rare); padding: 15px; font-family: 'Teko'; font-size: 1.8rem; cursor: pointer; border: none; font-weight: bold; color: black; border-radius: 5px;">CREATE ACCOUNT NOW</button>
         </div>
     </div>
+    
+    <div id="facility-tutorial-modal" class="modal hidden"><div class="modal-content login-box" style="border-color: var(--accent-green); text-align: left; max-width: 500px;"><h2 style="font-family:'Teko'; font-size:3.5rem; color:var(--accent-green); text-align: center;">FACILITY GUIDE</h2><p style="font-size: 1.1rem; margin: 15px 0; color: #ddd; text-align: center;">Assign spare dinosaurs to generate active resources while playing!</p><div style="background: rgba(0,0,0,0.5); padding: 12px; border-radius: 5px; margin-bottom: 20px; border-left: 3px solid var(--ui-gold); line-height: 1.6;"><p>🌿 <strong>Herbivore Haven:</strong> Generates Coins steadily.</p><p>🥩 <strong>Carnivore Compound:</strong> Generates Coins rapidly.</p><p>🧬 <strong>Genetics Lab:</strong> Epic+ cards generate 🎫 Permits!</p></div><button id="close-fac-tut-btn" style="width:100%; background:var(--accent-green); border:none; padding:12px; font-family:'Teko'; font-size: 1.8rem; font-weight:bold; cursor: pointer; color: white;">START MANAGING</button></div></div>
 
-    <!-- Facility First-Time Tutorial Modal -->
-    <div id="facility-tutorial-modal" class="modal hidden">
-        <div class="modal-content login-box" style="border-color: var(--accent-green); text-align: left; max-width: 500px;">
-            <h2 style="font-family:'Teko'; font-size:3.5rem; color:var(--accent-green); text-shadow:2px 2px black; text-align: center; line-height: 1;">WELCOME TO THE FACILITY</h2>
-            <p style="font-size: 1.1rem; margin: 15px 0; color: #e8e2d2; text-align: center;">
-                Your extra dinosaurs don't just sit around—they can work for you to generate passive income!
-            </p>
-            <div style="background: rgba(0,0,0,0.5); padding: 15px; border-radius: 5px; margin-bottom: 20px; border-left: 3px solid var(--ui-gold);">
-                <p style="margin-bottom: 8px;">🌿 <strong>Herbivore Haven:</strong> Generates Coins steadily.</p>
-                <p style="margin-bottom: 8px;">🥩 <strong>Carnivore Compound:</strong> Generates Coins faster!</p>
-                <p>🧬 <strong>Genetics Lab:</strong> Epic+ cards generate 🎫 Permits!</p>
-            </div>
-            <p style="font-size: 1.1rem; margin-bottom: 20px; color: var(--ui-gold); text-align: center;">
-                Click the <strong>+</strong> in any unlocked facility to assign a dinosaur. <br>Level up your dinosaurs to increase their production rate!
-            </p>
-            <button id="close-fac-tut-btn" class="dup-choice-btn" style="background: var(--accent-green); width: 100%; color: white; border: none;">START MANAGING</button>
-        </div>
-    </div>
-
-    <!-- Audio Elements for dynamic sound system -->
     <audio id="click-sound" src="https://cdn.freesound.org/previews/256/256113_3263906-lq.mp3"></audio>
     <audio id="success-sound" src="https://cdn.freesound.org/previews/270/270404_5123851-lq.mp3"></audio>
     <audio id="excavate-sound" src="https://cdn.freesound.org/previews/433/433644_5121236-lq.mp3"></audio>
