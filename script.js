@@ -15,20 +15,15 @@ let facilityTutorialDone = false;
 let isExcavating = false;
 let activeFacilityKey = null; let activeSlotIndex = null;
 
-// OVERHAULED Gauntlet State (Best of 5 Format)
+// Gauntlet State (Best of 5 Format)
 let gauntletState = { 
-    active: false, 
-    pWins: 0, 
-    aiWins: 0, 
-    pTeam: [], 
-    aiTeam: [], 
-    matchRound: 0,
-    draftStep: 0,
-    draftOffered: []
+    active: false, pWins: 0, aiWins: 0, pTeam: [], aiTeam: [], matchRound: 0, draftStep: 0, draftOffered: []
 };
 let playerRP = 1000;
 
-let incubators = [null, null];
+// 4 Incubator Slots
+let incubators = [null, null, null, null];
+
 const views = ['home-view', 'about-view', 'collection-view', 'facility-view', 'arena-view', 'rankings-view', 'daily-view', 'quests-view', 'achievements-view', 'map-view', 'dinoweb-view'];
 const tabs = document.querySelectorAll('#nav-tabs li');
 
@@ -95,8 +90,13 @@ function loadUserData() {
         }
 
         let savedInc = localStorage.getItem('dinoIncubators_' + currentUser);
-        if (savedInc) { incubators = JSON.parse(savedInc); } 
-        else { incubators = [ { dino: JSON.parse(JSON.stringify(masterCatalog[3])), readyTime: Date.now() - 5000, speedUps: 0 }, null ]; }
+        if (savedInc) { 
+            incubators = JSON.parse(savedInc); 
+            // Auto-expand old saves from 2 to 4 slots safely
+            while(incubators.length < 4) incubators.push(null);
+        } 
+        else { incubators = [ { dino: JSON.parse(JSON.stringify(masterCatalog[3])), readyTime: Date.now() - 5000, speedUps: 0 }, null, null, null ]; }
+        
         let savedFac = localStorage.getItem('dinoFacility_' + currentUser); if (savedFac) facilityState = JSON.parse(savedFac);
         
         let savedPuzzle = localStorage.getItem('dinoPuzzle_' + currentUser);
@@ -108,7 +108,7 @@ function loadUserData() {
         renderDinoWebList(); checkDailyReset(); updateIncubatorUI(); initDailyPuzzle();
     } else {
         coins = 0; permits = 0; playerRP = 1000; userCollection = []; facilityTutorialDone = false;
-        incubators = [ { dino: JSON.parse(JSON.stringify(masterCatalog[3])), readyTime: 0, speedUps: 0 }, null ];
+        incubators = [ { dino: JSON.parse(JSON.stringify(masterCatalog[3])), readyTime: 0, speedUps: 0 }, null, null, null ];
         const pContainer = document.getElementById('daily-puzzle-container');
         if (pContainer) pContainer.classList.add('hidden');
     }
@@ -137,7 +137,13 @@ function updateStatsUI() {
     document.getElementById('coin-count').innerText = coins; document.getElementById('permit-count').innerText = permits;
     const exBtn = document.getElementById('excavate-btn'); const buyBtn = document.getElementById('buy-pack-btn'); const msg = document.getElementById('excavate-msg'); 
     const enterBtn = document.getElementById('arena-enter-btn'); const broke = document.getElementById('arena-broke-msg');
-    let hasEmpty = incubators.some(i => i === null);
+    
+    // Check if any UNLOCKED incubator is empty
+    let hasEmpty = false;
+    for(let i=0; i<4; i++) {
+        let isUnlocked = (i < 2) || (i === 2 && playerRP >= 1500) || (i === 3 && playerRP >= 3000);
+        if(isUnlocked && incubators[i] === null) hasEmpty = true;
+    }
 
     if (!currentUser) {
         buyBtn.classList.add('hidden'); 
@@ -224,9 +230,24 @@ setInterval(() => {
 }, 1000);
 
 function updateIncubatorUI() {
-    for (let i = 0; i < 2; i++) {
+    for (let i = 0; i < 4; i++) {
         let slotEl = document.getElementById('inc-slot-' + i); if (!slotEl) continue;
+        
+        let isUnlocked = true;
+        let reqText = "";
+        if (i === 2) { isUnlocked = playerRP >= 1500; reqText = "Requires Gold Rank (1500 RP)"; }
+        if (i === 3) { isUnlocked = playerRP >= 3000; reqText = "Requires Diamond Rank (3000 RP)"; }
+
+        if (!isUnlocked) {
+            slotEl.innerHTML = `<div class="egg-icon" style="filter: grayscale(100%); opacity: 0.5;">🔒</div><p class="egg-status" style="color:#ff5252;">LOCKED</p><p style="color:#aaa; font-size:0.9rem; text-align:center; font-family:'Oswald'; margin-top:5px;">${reqText}</p>`;
+            slotEl.classList.remove('filled');
+            slotEl.classList.add('locked');
+            continue;
+        }
+        
+        slotEl.classList.remove('locked');
         let inc = incubators[i];
+        
         if (!inc) { slotEl.innerHTML = `<div class="egg-icon">🥚</div><p class="egg-status">EMPTY SLOT</p>`; slotEl.classList.remove('filled'); } 
         else {
             slotEl.classList.add('filled');
@@ -292,7 +313,14 @@ function closeReveal() {
 }
 
 function triggerExcavation() {
-    let emptyIdx = incubators.findIndex(inc => inc === null); if (emptyIdx === -1) { playSound('error'); alert("Incubator nests are full! Speed up or hatch an existing egg first."); isExcavating = false; return; }
+    let emptyIdx = -1;
+    for(let i = 0; i < 4; i++) {
+        let isUnlocked = (i < 2) || (i === 2 && playerRP >= 1500) || (i === 3 && playerRP >= 3000);
+        if(isUnlocked && incubators[i] === null) { emptyIdx = i; break; }
+    }
+    
+    if (emptyIdx === -1) { playSound('error'); alert("Available Incubator nests are full! Speed up an egg or Rank Up in the Arena to unlock more space."); isExcavating = false; return; }
+    
     playSound('excavate'); document.querySelector('.database-controls').classList.add('hidden'); 
     let eBtn = document.getElementById('excavate-btn'); if (eBtn) eBtn.classList.add('hidden'); 
     let bBtn = document.getElementById('buy-pack-btn'); if (bBtn) bBtn.classList.add('hidden'); 
@@ -425,6 +453,7 @@ function rollDraftChoices() {
     document.getElementById('draft-count').innerText = gauntletState.draftStep + 1;
     let grid = document.getElementById('draft-choices-grid'); grid.innerHTML = '';
     
+    // Pull from USER COLLECTION
     let availableForDraft = userCollection.filter(uc => !gauntletState.pTeam.some(pt => pt.id === uc.id && pt.variant === uc.variant));
     let choices = [];
     let tempPool = [...availableForDraft];
@@ -492,6 +521,7 @@ function startMatch() {
 function renderCombatStage() {
     let pCardBox = document.getElementById('combat-player-card'); let aiCardBox = document.getElementById('combat-ai-card');
     
+    // BO5 Dots logic
     let pDotsHtml = ""; let aiDotsHtml = "";
     for(let i=0; i<3; i++) {
         pDotsHtml += (i < gauntletState.pWins) ? "🟢 " : "⚪ ";
@@ -501,6 +531,7 @@ function renderCombatStage() {
     document.getElementById('player-team-dots').innerText = pDotsHtml.trim();
     document.getElementById('ai-team-dots').innerText = aiDotsHtml.trim();
     
+    // Rotate guarantee
     let pIdx = gauntletState.matchRound % gauntletState.pTeam.length;
     let aiIdx = gauntletState.matchRound % gauntletState.aiTeam.length;
     
@@ -529,6 +560,8 @@ function executeCombatClash(statKey) {
     document.getElementById('combat-ai-card').innerHTML = createCardHTML(aiDino, true);
     
     let pVal = pDino.stats[statKey]; let aiVal = aiDino.stats[statKey];
+    
+    // Enforce decisive win/loss
     if(pVal === aiVal) pVal += 1; 
 
     let statNames = { pac: 'Pace', pwr: 'Power', def: 'Defense', siz: 'Size', iq: 'Intelligence', agi: 'Agility' };
@@ -733,7 +766,7 @@ window.claimMilestone = function(m) {
     }
 };
 
-// --- DINO WEB ENCYCLOPEDIA ---
+// --- DINO WEB ENCYCLOPEDIA (FIXED TO SHOW STAT REASONS) ---
 function renderDinoWebList(search = "") {
     const list = document.getElementById('dinoweb-list'); if (!list) return; list.innerHTML = '';
     if (search === "" || "prehistoric eras general info guide".includes(search.toLowerCase())) { let genLi = document.createElement('li'); genLi.className = 'dinoweb-list-item'; genLi.innerHTML = `<span>🌍</span> Prehistoric Eras Guide`; genLi.onclick = () => { document.querySelectorAll('.dinoweb-list-item').forEach(el => el.classList.remove('active')); genLi.classList.add('active'); loadErasArticle(); }; list.appendChild(genLi); }
@@ -938,7 +971,7 @@ authForm.addEventListener('submit', (e) => {
         coins = 2000; permits = 3; playerRP = 1000;
         userCollection = [ JSON.parse(JSON.stringify(masterCatalog[0])), JSON.parse(JSON.stringify(masterCatalog[1])), JSON.parse(JSON.stringify(masterCatalog[2])) ];
         userCollection.forEach(d => d.variant = 'standard');
-        incubators = [ { dino: JSON.parse(JSON.stringify(masterCatalog[3])), readyTime: Date.now() - 5000, speedUps: 0 }, null ];
+        incubators = [ { dino: JSON.parse(JSON.stringify(masterCatalog[3])), readyTime: Date.now() - 5000, speedUps: 0 }, null, null, null ];
         
         facilityState = { herbivore: { unlocked: true, level: 1, slots: [null], storedCoins: 0, cost: 0, upgCost: [1000, 2500] }, carnivore: { unlocked: false, level: 1, slots: [null], storedCoins: 0, cost: 2500, upgCost: [3000, 5000] }, genetics: { unlocked: false, level: 1, slots: [null], storedPermits: 0.0, cost: 5000, upgCost: [5000, 10000] } };
         dailyPuzzleState = { date: '', targetId: null, guesses: [], won: false, lost: false };
