@@ -79,6 +79,8 @@ nav ul li:hover, nav ul li.active { color: var(--accent-green); text-shadow: 0 0
 .incubator-grid { display: flex; justify-content: center; gap: 20px; margin: 20px 0; flex-wrap: wrap; }
 .incubator-slot { background: rgba(10,15,10,0.9); border: 3px dashed var(--accent-green); width: 250px; height: 250px; border-radius: 15px; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 15px; box-shadow: inset 0 0 20px rgba(0,0,0,0.8); transition: 0.3s;}
 .incubator-slot.filled { border-style: solid; box-shadow: 0 0 20px var(--accent-green); background: rgba(20,40,20,0.9); }
+.incubator-slot.locked { background: rgba(10,10,10,0.9); border-color: #555; cursor: not-allowed; }
+.incubator-slot.locked .egg-status { color: #ff5252; }
 .egg-icon { font-size: 5rem; margin-bottom: 5px; filter: drop-shadow(2px 4px 6px black); }
 .egg-icon.pulsing { animation: heartbeat 1.5s infinite; }
 @keyframes heartbeat { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
