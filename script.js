@@ -489,25 +489,26 @@ function checkDraftComplete() {
 function startMatch() {
     gauntletState.aiTeam = [];
     
-    // FIX: Generate 5 random cards instead of 3 so the AI never repeats during a Best-of-5
-    let aiSize = currentUser ? 5 : 1;
-    
-    let maxPLevel = 1;
-    if(currentUser) {
-        gauntletState.pTeam.forEach(d => { if(d.level > maxPLevel) maxPLevel = d.level; });
-    }
+    // 5 rounds in a Best-of-5 means we need 5 completely random opponents
+    let aiSize = currentUser ? 5 : 1; 
     
     for(let i=0; i<aiSize; i++) {
+        // 1. Completely random dinosaur species
         let aiDino = JSON.parse(JSON.stringify(masterCatalog[Math.floor(Math.random() * masterCatalog.length)]));
-        aiDino.variant = 'standard'; 
         
-        // HIGHER DIFFICULTY AI SCALING: MaxLevel up to MaxLevel + 5
-        let aiLevel = maxPLevel + Math.floor(Math.random() * 6); 
+        // 2. Completely random variant (Standard, Holo, or Primal)
+        let roll = Math.random();
+        if (roll > 0.90) { aiDino.variant = 'primal'; aiDino.ovr += 7; Object.keys(aiDino.stats).forEach(k => aiDino.stats[k] += 7); }
+        else if (roll > 0.70) { aiDino.variant = 'holo'; aiDino.ovr += 3; Object.keys(aiDino.stats).forEach(k => aiDino.stats[k] += 3); }
+        else { aiDino.variant = 'standard'; }
+        
+        // 3. Strictly random level from 1 to 10
+        let aiLevel = Math.floor(Math.random() * 10) + 1; 
         aiDino.level = aiLevel;
         
-        let difficultyBoost = 5; 
-        aiDino.ovr += (aiLevel - 1) + difficultyBoost;
-        Object.keys(aiDino.stats).forEach(k => aiDino.stats[k] += (aiLevel - 1) + difficultyBoost);
+        // Apply level stat boosts
+        aiDino.ovr += (aiLevel - 1);
+        Object.keys(aiDino.stats).forEach(k => aiDino.stats[k] += (aiLevel - 1));
         
         gauntletState.aiTeam.push(aiDino);
     }
