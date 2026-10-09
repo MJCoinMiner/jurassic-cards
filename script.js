@@ -488,7 +488,9 @@ function checkDraftComplete() {
 
 function startMatch() {
     gauntletState.aiTeam = [];
-    let aiSize = currentUser ? 3 : 1;
+    
+    // FIX: Generate 5 random cards instead of 3 so the AI never repeats during a Best-of-5
+    let aiSize = currentUser ? 5 : 1;
     
     let maxPLevel = 1;
     if(currentUser) {
@@ -517,7 +519,6 @@ function startMatch() {
     document.getElementById('combat-next-round-btn').classList.add('hidden');
     renderCombatStage();
 }
-
 function renderCombatStage() {
     let pCardBox = document.getElementById('combat-player-card'); let aiCardBox = document.getElementById('combat-ai-card');
     
